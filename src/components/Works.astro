@@ -1,0 +1,312 @@
+---
+import { Image } from 'astro:assets';
+import { getProjects } from '../lib/projects';
+
+const projects = await getProjects();
+---
+
+<section class="works" id="works">
+  <h2 class="works__title display" data-warp>Selected<br />Works</h2>
+
+  {
+    projects.map((p) => {
+      const href = `/projects/${p.id}/`;
+      return (
+        <article class="work">
+          <div class="work__head" data-fold>
+            <div class="work__meta">
+              {p.data.badge && <span class="work__badge">{p.data.badge}</span>}
+              <span class="work__year">{p.data.year}</span>
+            </div>
+            <h3 class="work__name">
+              <a href={href} class="work__name-link">
+                <span class="work__name-text" data-bend>
+                  {p.data.title}
+                </span>
+                <svg class="work__name-arrow" viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="M4 12 12 4M5.5 4H12v6.5" fill="none" stroke="currentColor" stroke-width="1.6" />
+                </svg>
+              </a>
+            </h3>
+            <p class="work__blurb">{p.data.summary}</p>
+            <div class="work__links">
+              <a class="btn" href={href}>
+                <span class="roll">
+                  <span>View Case Study</span>
+                  <span>View Case Study</span>
+                </span>
+              </a>
+              {p.data.links.map((l) => (
+                <a class="btn" href={l.url} target="_blank" rel="noopener">
+                  <span class="roll">
+                    <span>{l.label}</span>
+                    <span>{l.label}</span>
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div class="work__slider" data-slider data-href={href}>
+            <div class="work__viewport" data-slider-viewport>
+              <div class="work__track" data-slider-track>
+                {p.data.gallery.map((img, i) => (
+                  <div class="work__slide" data-slide>
+                    <Image
+                      src={img}
+                      alt={`${p.data.title} — screen ${i + 1}`}
+                      widths={[800, 1200, 1600]}
+                      sizes="(max-width: 700px) 90vw, 66vw"
+                      draggable="false"
+                      loading={i < 2 ? 'eager' : 'lazy'}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div class="work__dots" data-slider-dots role="group" aria-label="Choose an image" />
+          </div>
+        </article>
+      );
+    })
+  }
+</section>
+
+<style>
+  .works {
+    position: relative;
+    z-index: 2;
+    background: var(--bg);
+    padding: clamp(6rem, 16vh, 11rem) 0 clamp(4rem, 10vh, 8rem);
+  }
+
+  .works__title {
+    text-align: center;
+    font-size: clamp(4rem, 15vw, 15rem);
+    margin-bottom: clamp(3rem, 10vh, 8rem);
+    perspective: 900px;
+  }
+
+  .work {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-block: clamp(2rem, 6vh, 4rem);
+  }
+
+  .work__head {
+    width: min(840px, calc(100% - 2 * var(--gutter)));
+    margin: 0 auto clamp(1.25rem, 2.6vh, 2.25rem);
+    perspective: 1100px;
+  }
+
+  .work__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+  }
+
+  .work__badge {
+    padding: 0.2em 0.7em;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 999px;
+    color: var(--sky);
+    border-color: color-mix(in srgb, var(--sky) 55%, transparent);
+  }
+
+  .work__name {
+    font-size: clamp(2.75rem, 7vw, 5.5rem);
+    font-weight: 650;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .work__name-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2em;
+    text-decoration: none;
+  }
+
+  .work__name-text {
+    position: relative;
+    display: inline-block;
+  }
+
+  .work__name-arrow {
+    width: 0.32em;
+    height: 0.32em;
+    opacity: 0;
+    translate: -0.2em 0.1em;
+    transition:
+      opacity 0.25s,
+      translate 0.35s var(--ease-out);
+  }
+
+  .work__name-link:hover .work__name-arrow,
+  .work__name-link:focus-visible .work__name-arrow {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  .work__blurb {
+    max-width: 44ch;
+    font-size: clamp(1rem, 1.5vw, 1.4rem);
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.82);
+  }
+
+  .work__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+    margin-top: 1.75rem;
+  }
+
+  .work__viewport {
+    position: relative;
+    overflow: hidden;
+    perspective: 1600px;
+    cursor: grab;
+    padding-block: 12px;
+  }
+
+  .work__viewport[data-grab='down'] {
+    cursor: grabbing;
+  }
+
+  .work__track {
+    position: relative;
+    transform-style: preserve-3d;
+    aspect-ratio: 16 / 7;
+  }
+
+  [data-status='active'] .work__track {
+    aspect-ratio: auto;
+  }
+
+  .work__slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 66%;
+    backface-visibility: hidden;
+    transition: opacity 0.4s;
+    user-select: none;
+  }
+
+  .work__slide[data-status='idle'] {
+    opacity: 0.3;
+  }
+
+  .work__slide :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    border-radius: clamp(14px, 1.7vw, 24px);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+    background: #0b0b0f;
+    pointer-events: none;
+    -webkit-user-drag: none;
+  }
+
+  .work__dots {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.25rem;
+  }
+
+  .work__dots :global(.work__dot) {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+
+  .work__dots :global(.work__dot)::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.28;
+    transition:
+      opacity 0.25s,
+      background-color 0.25s;
+  }
+
+  .work__dots :global(.work__dot:hover)::before {
+    opacity: 0.6;
+  }
+
+  .work__dots :global(.work__dot.is-active)::before {
+    opacity: 1;
+    background: var(--sky);
+  }
+
+  @media (max-width: 767px) {
+    .work {
+      min-height: 0;
+      padding-block: 3rem;
+    }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { SplitText } from 'gsap/SplitText';
+  import { initSlider } from '../scripts/slider';
+  import { initBend } from '../scripts/bend';
+
+  gsap.registerPlugin(ScrollTrigger, SplitText);
+
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const canHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  document.querySelectorAll<HTMLElement>('[data-slider]').forEach(initSlider);
+
+  document.fonts.ready.then(() => {
+    if (canHover && !reduce) document.querySelectorAll<HTMLElement>('[data-bend]').forEach(initBend);
+    if (reduce) return;
+
+    // big section title: letters fold up out of the floor as it scrolls in
+    document.querySelectorAll<HTMLElement>('[data-warp]').forEach((title) => {
+      const split = SplitText.create(title, { type: 'chars,lines' });
+      gsap.from(split.chars, {
+        rotationX: -95,
+        yPercent: 40,
+        opacity: 0,
+        transformOrigin: '50% 100%',
+        ease: 'power2.out',
+        stagger: 0.04,
+        scrollTrigger: { trigger: title, start: 'top 90%', end: 'top 35%', scrub: 0.6 },
+      });
+    });
+
+    // project heading: each line folds in as it enters
+    document.querySelectorAll<HTMLElement>('[data-fold]').forEach((head) => {
+      gsap.from(head.children, {
+        rotationX: -64,
+        y: 60,
+        opacity: 0,
+        transformOrigin: '50% 0%',
+        ease: 'power2.out',
+        stagger: 0.08,
+        scrollTrigger: { trigger: head, start: 'top 92%', end: 'top 55%', scrub: 0.6 },
+      });
+    });
+  });
+</script>

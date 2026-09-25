@@ -1,0 +1,36 @@
+---
+import '@fontsource/mrs-saint-delafield/400.css';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import site from '../data/site.json';
+
+interface Props {
+  title?: string;
+  description?: string;
+  home?: boolean;
+}
+const { title, description = `${site.name} — ${site.role}. ${site.eyebrow}.`, home = true } = Astro.props;
+const pageTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.role}`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta name="theme-color" content="#0a0a0b" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/ClashDisplay-Variable.ttf" as="font" type="font/ttf" crossorigin />
+  </head>
+  <body>
+    <Header home={home} />
+    <slot />
+    <script>
+      import '../scripts/smooth';
+    </script>
+  </body>
+</html>

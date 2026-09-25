@@ -1,0 +1,277 @@
+---
+import site from '../data/site.json';
+
+const { contact } = site;
+const year = new Date().getFullYear();
+const bigWord = site.shortName.toUpperCase();
+---
+
+<section class="contact" id="contact">
+  <div class="contact__panel" data-contact-panel>
+    <div class="contact__top">
+      <!-- LOGO MARK PLACEHOLDER: three shapes that assemble when the section appears -->
+      <svg class="contact__mark" viewBox="0 0 120 120" aria-hidden="true" data-mark>
+        <path data-piece d="M60 8 L20 112 H44 L60 64 Z" />
+        <path data-piece d="M60 8 L100 112 H76 L60 64 Z" />
+        <rect data-piece x="38" y="78" width="44" height="14" rx="2" />
+      </svg>
+
+      <div class="contact__main">
+        <h2 class="contact__title">
+          {contact.title.map((l) => <span class="line"><span>{l}</span></span>)}
+        </h2>
+        <p class="contact__text" data-fade>{contact.text}</p>
+        <div class="contact__actions" data-fade>
+          <a class="btn btn--ink" href={site.bookCallUrl}>
+            <span class="roll"><span>Book a call</span><span>Book a call</span></span>
+            <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"
+              ><path d="M4 12 12 4M5.5 4H12v6.5" fill="none" stroke="currentColor" stroke-width="1.8"></path></svg
+            >
+          </a>
+          <a class="btn btn--line" href={`mailto:${site.email}`} data-copy={site.email}>
+            <span class="roll">
+              <span>{site.email}</span>
+              <span>Click to copy email</span>
+              <span>Copied to clipboard!</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact__word" aria-hidden="true" data-word>
+      <span data-word-inner>{bigWord.split('').map((c) => <span class="ch"><span>{c}</span></span>)}</span>
+    </div>
+
+    <div class="contact__bottom">
+      <span class="mono-label">© {year} {site.name}</span>
+      <ul class="contact__socials">
+        {
+          site.socials.map((s) => (
+            <li>
+              <a href={s.url} target="_blank" rel="noopener">
+                {s.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <a class="mono-label contact__top-link" href="#top" data-to-top>Back to top ↑</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact {
+    position: relative;
+    z-index: 2;
+    background: var(--bg);
+  }
+
+  .contact__panel {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    background: var(--sky);
+    color: var(--ink);
+    padding: clamp(6.5rem, 14vh, 9rem) var(--gutter) 0;
+    overflow: hidden;
+    clip-path: inset(0 0 0 0 round 0);
+  }
+
+  .contact__top {
+    display: flex;
+    gap: 2.5rem 4rem;
+    justify-content: space-between;
+    align-items: flex-start;
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .contact__mark {
+    width: clamp(72px, 8vw, 118px);
+    flex-shrink: 0;
+    fill: var(--ink);
+    overflow: visible;
+  }
+
+  .contact__main {
+    max-width: 780px;
+  }
+
+  .contact__title {
+    font-size: clamp(2.4rem, 5.6vw, 5.25rem);
+    font-weight: 600;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+  }
+
+  .contact__title .line {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.06em;
+  }
+
+  .contact__title .line > span {
+    display: block;
+  }
+
+  .contact__text {
+    margin-top: 1.75rem;
+    max-width: 38ch;
+    font-size: clamp(1.05rem, 1.6vw, 1.45rem);
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .contact__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+    margin-top: 2.25rem;
+  }
+
+  .btn--ink {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--sky);
+  }
+
+  .btn--ink:hover {
+    background: #000;
+    border-color: #000;
+  }
+
+  .btn--line {
+    border-color: rgba(7, 18, 28, 0.4);
+  }
+
+  .btn--line:hover {
+    border-color: var(--ink);
+    background: rgba(7, 18, 28, 0.06);
+  }
+
+  .contact__word {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    margin-top: clamp(3rem, 8vh, 6rem);
+    font-weight: 650;
+    line-height: 0.74;
+    letter-spacing: -0.03em;
+    white-space: nowrap;
+    font-size: 21vw;
+  }
+
+  .contact__word .ch {
+    display: inline-block;
+    overflow: hidden;
+    padding-top: 0.06em;
+  }
+
+  .contact__word .ch > span {
+    display: inline-block;
+  }
+
+  .contact__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 1.25rem 0 calc(1.25rem + env(safe-area-inset-bottom));
+    border-top: 1px solid rgba(7, 18, 28, 0.85);
+    font-size: 0.8rem;
+  }
+
+  .contact__socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .contact__socials a,
+  .contact__top-link {
+    font-weight: 500;
+    text-decoration: none;
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+    transition: background-size 0.35s var(--ease-out);
+  }
+
+  .contact__socials a:hover,
+  .contact__top-link:hover {
+    background-size: 100% 1px;
+  }
+
+  @media (max-width: 800px) {
+    .contact__top {
+      flex-direction: column;
+    }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { lenis } from '../scripts/smooth';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const panel = document.querySelector<HTMLElement>('[data-contact-panel]')!;
+  const word = panel.querySelector<HTMLElement>('[data-word]')!;
+
+  // make the giant name fill the full width
+  const fit = () => {
+    word.style.fontSize = '100px';
+    const w = word.querySelector<HTMLElement>('[data-word-inner]')!.offsetWidth;
+    const target = panel.clientWidth - 2 * parseFloat(getComputedStyle(panel).paddingLeft);
+    word.style.fontSize = `${(100 * target) / (w || 1)}px`;
+  };
+  document.fonts.ready.then(fit);
+  addEventListener('resize', fit);
+
+  panel.querySelector('[data-to-top]')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (lenis) lenis.scrollTo(0, { duration: 1.6 });
+    else scrollTo({ top: 0 });
+  });
+
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    // the blue panel grows from a rounded card into a full-bleed page
+    gsap.fromTo(
+      panel,
+      { clipPath: 'inset(14% 5% 0% 5% round 48px)' },
+      {
+        clipPath: 'inset(0% 0% 0% 0% round 0px)',
+        ease: 'none',
+        scrollTrigger: { trigger: panel, start: 'top bottom', end: 'top top', scrub: true },
+      },
+    );
+
+    const tl = gsap.timeline({
+      scrollTrigger: { trigger: panel, start: 'top 45%', toggleActions: 'play none none reverse' },
+    });
+    tl.from('[data-mark] [data-piece]', {
+      opacity: 0,
+      scale: 0.2,
+      rotation: (i: number) => [-120, 120, 180][i] ?? 90,
+      x: (i: number) => [-40, 40, 0][i] ?? 0,
+      y: (i: number) => [30, 30, 60][i] ?? 0,
+      transformOrigin: '50% 50%',
+      duration: 1.1,
+      ease: 'back.out(1.6)',
+      stagger: 0.1,
+    })
+      .from('.contact__title .line > span', { yPercent: 110, duration: 1, ease: 'expo.out', stagger: 0.1 }, 0.1)
+      .from('#contact [data-fade]', { y: 24, opacity: 0, duration: 0.8, ease: 'power3.out', stagger: 0.1 }, 0.45)
+      .from('[data-word] .ch > span', { yPercent: 105, duration: 1.2, ease: 'expo.out', stagger: 0.05 }, 0.3);
+  }
+</script>

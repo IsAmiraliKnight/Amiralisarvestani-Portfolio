@@ -1,0 +1,232 @@
+---
+import { getImage } from 'astro:assets';
+import site from '../data/site.json';
+import { getProjects } from '../lib/projects';
+
+// every gallery image of every project becomes a tile in the hero grid
+const projects = await getProjects();
+const tiles = [];
+for (const p of projects) {
+  for (const img of p.data.gallery) {
+    const opt = await getImage({ src: img, width: 640, height: 640, fit: 'cover', format: 'webp' });
+    tiles.push({ src: opt.src, title: p.data.title, href: `/projects/${p.id}/` });
+  }
+}
+// interleave projects so neighbouring tiles differ
+const perProject = projects.map((p) => tiles.filter((t) => t.title === p.data.title));
+const mixed = [];
+for (let i = 0; perProject.some((l) => l[i]); i++) for (const l of perProject) if (l[i]) mixed.push(l[i]);
+---
+
+<section class="dome" data-dome data-status="loading" aria-label="Project gallery">
+  <div class="dome__list" data-dome-list>
+    {
+      mixed.map((t) => (
+        <div class="dome__item" data-dome-item data-href={t.href} data-title={t.title}>
+          <img src={t.src} alt="" width="640" height="640" draggable="false" decoding="async" />
+        </div>
+      ))
+    }
+  </div>
+  <div class="dome__shade" aria-hidden="true"></div>
+  <span class="dome__label" data-dome-label aria-hidden="true"></span>
+</section>
+
+<div class="hero-title" data-hero-fade>
+  <p class="hero-title__eyebrow" data-hero-eyebrow>{site.eyebrow}</p>
+  <h1 class="hero-title__headline" data-hero-headline>{site.role}</h1>
+  <p class="hero-title__sign" data-hero-sign>{site.name}</p>
+</div>
+
+<div class="hero-spacer" id="intro" aria-hidden="true"></div>
+
+<style>
+  .dome {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    height: 100lvh;
+    overflow: clip;
+    background: #000;
+    cursor: grab;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+    opacity: 1;
+    transition: opacity 0.6s;
+  }
+
+  .dome[data-status='loading'] {
+    opacity: 0;
+  }
+
+  .dome[data-status='dragging'] {
+    cursor: grabbing;
+  }
+
+  .dome__list {
+    position: absolute;
+    inset: 0;
+  }
+
+  .dome__item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    border-radius: clamp(4px, 0.5vw, 8px);
+    background: #0d0d0d;
+    transform-origin: 0 0;
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  .dome__item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    -webkit-user-drag: none;
+    transition: filter 0.4s;
+  }
+
+  @media (hover: hover) {
+    .dome__item:hover img {
+      filter: brightness(1.12);
+    }
+  }
+
+  .dome__shade {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(rgba(0, 0, 0, 0) 38%, rgba(0, 0, 0, 0.55) 72%, rgba(0, 0, 0, 0.82)),
+      radial-gradient(78% 72% at 50% 44%, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.6));
+  }
+
+  .dome__label {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    margin: 18px 0 0 18px;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    background: #fff;
+    color: #0b0b0b;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    scale: 0.6;
+    transition:
+      opacity 0.25s,
+      scale 0.35s var(--ease-out);
+  }
+
+  .dome__label.is-on {
+    opacity: 1;
+    scale: 1;
+  }
+
+  .dome__label:empty {
+    display: none;
+  }
+
+  .hero-title {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 5;
+    display: grid;
+    justify-items: center;
+    padding: 0 var(--gutter) clamp(2rem, 7vh, 5.5rem);
+    text-align: center;
+    pointer-events: none;
+    container-type: inline-size;
+    --display: min(200px, 100cqi / 8.3);
+  }
+
+  .hero-title::before {
+    content: '';
+    position: absolute;
+    inset: -40vh 0 0;
+    z-index: -1;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.92),
+      rgba(0, 0, 0, 0.78) 22%,
+      rgba(0, 0, 0, 0.42) 52%,
+      rgba(0, 0, 0, 0.14) 78%,
+      rgba(0, 0, 0, 0)
+    );
+  }
+
+  .hero-title__eyebrow {
+    margin-bottom: clamp(0.5rem, 1.2vh, 1rem);
+    font-size: clamp(0.8125rem, 1.15vw, 1.125rem);
+    font-weight: 500;
+    text-shadow: 0 1px 12px rgba(0, 0, 0, 0.55);
+  }
+
+  .hero-title__headline {
+    font-weight: 650;
+    font-size: var(--display);
+    line-height: 0.9;
+    letter-spacing: -0.025em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .hero-title__sign {
+    margin-top: -0.18em;
+    font-family: var(--font-sign);
+    font-size: max(2.2rem, calc(var(--display) * 0.5));
+    line-height: 1;
+    color: var(--sky);
+    white-space: nowrap;
+    transform: rotate(-4deg);
+  }
+
+  .hero-spacer {
+    height: 115vh;
+    height: 115svh;
+  }
+
+  @media (max-width: 640px) {
+    .hero-title {
+      --display: calc(100cqi / 5.1);
+    }
+    .hero-title__headline {
+      white-space: normal;
+    }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { SplitText } from 'gsap/SplitText';
+  import { initDome } from '../scripts/dome';
+
+  gsap.registerPlugin(SplitText);
+
+  const stage = document.querySelector<HTMLElement>('[data-dome]');
+  if (stage) initDome(stage);
+
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.fonts.ready.then(() => {
+      const headline = document.querySelector('[data-hero-headline]');
+      if (!headline) return;
+      const split = SplitText.create(headline, { type: 'words,chars', mask: 'chars' });
+      const tl = gsap.timeline({ delay: 0.35 });
+      tl.from(split.chars, { yPercent: 110, duration: 1.1, ease: 'expo.out', stagger: 0.035 })
+        .from('[data-hero-eyebrow]', { y: 16, opacity: 0, duration: 0.8, ease: 'power3.out' }, 0.2)
+        .from(
+          '[data-hero-sign]',
+          { clipPath: 'inset(0 100% 0 0)', opacity: 0, duration: 1.4, ease: 'power2.inOut' },
+          0.55,
+        );
+    });
+  }
+</script>

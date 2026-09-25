@@ -1,0 +1,36 @@
+{
+  "name": "Amirali Sarvestani",
+  "shortName": "amirali",
+  "role": "UI/UX Designer",
+  "eyebrow": "I design digital products people enjoy using",
+  "email": "hello@example.com",
+  "resume": "/resume.pdf",
+  "socials": [
+    { "label": "LinkedIn", "url": "https://www.linkedin.com/" },
+    { "label": "Behance", "url": "https://www.behance.net/" },
+    { "label": "Dribbble", "url": "https://dribbble.com/" },
+    { "label": "Instagram", "url": "https://www.instagram.com/" }
+  ],
+  "bookCallUrl": "mailto:hello@example.com?subject=Let's%20talk",
+  "about": {
+    "label": "About me",
+    "intro": "I'm Amirali, a UI/UX designer who turns messy problems into clear, calm and useful digital products. I care about the details people feel but rarely notice.",
+    "points": [
+      "Research-led, from interviews to usability tests",
+      "Design systems that scale with the product",
+      "Pixel-perfect UI with meaningful motion",
+      "Close collaboration with developers"
+    ],
+    "headline": ["Designer by craft", "Problem solver by nature"],
+    "facts": [
+      { "title": "Experience", "text": "Years of designing websites, mobile apps and dashboards for startups and growing teams." },
+      { "title": "End-to-end process", "text": "From discovery and user research to wireframes, prototypes and the final polished interface." },
+      { "title": "Tools I use", "text": "Figma, FigJam, Framer, Adobe Illustrator and Photoshop, Protopie and a lot of paper sketches." },
+      { "title": "How I work", "text": "Clear communication, short feedback loops and decisions backed by users, not guesses." }
+    ]
+  },
+  "contact": {
+    "title": ["Have an idea", "worth designing?", "Let's make it real."],
+    "text": "Whether you are launching a new product, redesigning an app or need a fresh set of eyes on your user experience, I'd love to hear what you are working on."
+  }
+}

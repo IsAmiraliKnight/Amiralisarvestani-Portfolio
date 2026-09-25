@@ -1,0 +1,266 @@
+---
+import site from '../data/site.json';
+
+const { about } = site;
+const words = (text: string) => text.split(/\s+/).filter(Boolean);
+---
+
+<section class="about" id="about">
+  <div class="about__grid" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+
+  <div class="about__intro">
+    <span class="about__label mono-label">{about.label}</span>
+    <div class="about__body">
+      <p class="about__lead" data-reveal>
+        {words(about.intro).map((w) => <span class="w">{w} </span>)}
+      </p>
+      <ul class="about__points">
+        {
+          about.points.map((pt) => (
+            <li>
+              <span class="about__bullet" aria-hidden="true" />
+              <span data-reveal>{words(pt).map((w) => <span class="w">{w} </span>)}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="about__actions">
+        <a class="btn btn--solid" href={site.resume} target="_blank" rel="noopener">
+          <span class="roll"><span>Download CV</span><span>Download CV</span></span>
+        </a>
+        <a class="btn" href="#contact">
+          <span class="roll"><span>Get in touch</span><span>Get in touch</span></span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="about__facts">
+    <h2 class="about__headline display" data-rise>
+      {about.headline.map((line) => <span class="line"><span>{line}</span></span>)}
+    </h2>
+    <ul class="facts">
+      {
+        about.facts.map((f, i) => (
+          <li class="fact" data-fact>
+            <span class="fact__num mono-label">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="fact__title">{f.title}</h3>
+            <p class="fact__text" data-reveal>
+              {words(f.text).map((w) => <span class="w">{w} </span>)}
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .about {
+    position: relative;
+    z-index: 2;
+    background: var(--bg);
+    padding: clamp(6rem, 18vh, 12rem) var(--gutter) clamp(6rem, 16vh, 11rem);
+    overflow: hidden;
+  }
+
+  /* faint vertical guide lines, like a layout grid */
+  .about__grid {
+    position: absolute;
+    inset: 0;
+    width: min(901px, 100% - 2 * var(--gutter));
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    pointer-events: none;
+  }
+
+  .about__grid span {
+    border-right: 1px solid var(--line);
+  }
+
+  .about__grid span:first-child {
+    border-left: 1px solid var(--line);
+  }
+
+  .about__intro {
+    position: relative;
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    gap: 2.5rem;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .about__label {
+    flex-shrink: 0;
+    padding-top: 0.7rem;
+    color: var(--sky);
+  }
+
+  .about__body {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    max-width: 1190px;
+  }
+
+  .about__lead {
+    font-size: clamp(1.75rem, 4.7vw, 4.25rem);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.035em;
+  }
+
+  .about__points {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem 4rem;
+  }
+
+  .about__points li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: clamp(1.05rem, 1.7vw, 1.5rem);
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .about__bullet {
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    background: var(--sky);
+  }
+
+  .about__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+  }
+
+  [data-reveal] .w {
+    opacity: 0.16;
+  }
+
+  .about__facts {
+    position: relative;
+    max-width: 1400px;
+    margin: clamp(7rem, 22vh, 14rem) auto 0;
+  }
+
+  .about__headline {
+    font-size: clamp(2.5rem, 6.3vw, 7.5rem);
+    margin-bottom: clamp(3rem, 8vh, 6rem);
+  }
+
+  .about__headline .line {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.04em;
+  }
+
+  .about__headline .line > span {
+    display: block;
+  }
+
+  .about__headline .line:nth-child(2) {
+    color: var(--sky);
+  }
+
+  .facts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .fact {
+    display: grid;
+    grid-template-columns: 4rem minmax(0, 1fr) minmax(0, 1.4fr);
+    gap: 1rem 2rem;
+    align-items: baseline;
+    padding: clamp(1.5rem, 4vh, 2.75rem) 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+  }
+
+  .fact:last-child {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  }
+
+  .fact__num {
+    color: var(--muted);
+  }
+
+  .fact__title {
+    font-size: clamp(1.6rem, 3.2vw, 3rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  .fact__text {
+    font-size: clamp(1.05rem, 1.6vw, 1.5rem);
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  @media (max-width: 900px) {
+    .about__intro {
+      flex-direction: column;
+    }
+    .about__points {
+      grid-template-columns: 1fr;
+    }
+    .fact {
+      grid-template-columns: 2.5rem 1fr;
+    }
+    .fact__text {
+      grid-column: 2;
+    }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    gsap.set('[data-reveal] .w', { opacity: 1 });
+  } else {
+    // words light up one by one as you scroll through the text
+    document.querySelectorAll<HTMLElement>('#about [data-reveal]').forEach((block) => {
+      gsap.to(block.querySelectorAll('.w'), {
+        opacity: 1,
+        ease: 'none',
+        stagger: 0.1,
+        scrollTrigger: { trigger: block, start: 'top 85%', end: 'bottom 55%', scrub: true },
+      });
+    });
+
+    gsap.from('#about [data-rise] .line > span', {
+      yPercent: 105,
+      duration: 1.1,
+      ease: 'expo.out',
+      stagger: 0.12,
+      scrollTrigger: { trigger: '#about [data-rise]', start: 'top 80%' },
+    });
+
+    document.querySelectorAll<HTMLElement>('#about [data-fact]').forEach((fact) => {
+      gsap.from(fact.querySelectorAll('.fact__num, .fact__title'), {
+        y: 40,
+        opacity: 0,
+        duration: 0.9,
+        ease: 'power3.out',
+        stagger: 0.08,
+        scrollTrigger: { trigger: fact, start: 'top 85%' },
+      });
+    });
+  }
+</script>

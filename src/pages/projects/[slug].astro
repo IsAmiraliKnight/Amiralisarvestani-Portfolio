@@ -1,0 +1,428 @@
+---
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Contact from '../../components/Contact.astro';
+import { getProjects, type Project } from '../../lib/projects';
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project, i) => ({
+    params: { slug: project.id },
+    props: { project, next: projects[(i + 1) % projects.length] },
+  }));
+}
+
+interface Props {
+  project: Project;
+  next: Project;
+}
+const { project, next } = Astro.props;
+const { data } = project;
+const { Content } = await render(project);
+
+const info = [
+  { label: 'Role', value: data.role },
+  { label: 'Duration', value: data.duration },
+  { label: 'Tools', value: data.tools.join(', ') },
+  { label: 'Team', value: data.team },
+  { label: 'Year', value: data.year },
+].filter((i) => i.value);
+---
+
+<Base title={data.title} description={data.summary} home={false}>
+  <main class="case">
+    <header class="case__hero">
+      <a class="case__back mono-label" href="/#works">← All works</a>
+      <div class="case__meta">
+        {data.badge && <span class="case__badge">{data.badge}</span>}
+        <span>{data.year}</span>
+      </div>
+      <h1 class="case__title display" data-case-title>{data.title}</h1>
+      <p class="case__summary" data-case-fade>{data.summary}</p>
+
+      <dl class="case__info" data-case-fade>
+        {
+          info.map((i) => (
+            <div>
+              <dt class="mono-label">{i.label}</dt>
+              <dd>{i.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+      {
+        data.links.length > 0 && (
+          <div class="case__links" data-case-fade>
+            {data.links.map((l) => (
+              <a class="btn" href={l.url} target="_blank" rel="noopener">
+                <span class="roll">
+                  <span>{l.label} ↗</span>
+                  <span>{l.label} ↗</span>
+                </span>
+              </a>
+            ))}
+          </div>
+        )
+      }
+    </header>
+
+    <figure class="case__cover" data-cover>
+      <Image src={data.cover} alt={`${data.title} cover`} widths={[900, 1400, 2000]} sizes="100vw" loading="eager" />
+    </figure>
+
+    <article class="case__body">
+      <Content />
+    </article>
+
+    {
+      data.gallery.length > 0 && (
+        <section class="case__gallery">
+          <h2 class="mono-label">More screens</h2>
+          <div class="case__grid">
+            {data.gallery.map((img, i) => (
+              <figure data-gallery-item>
+                <Image
+                  src={img}
+                  alt={`${data.title} — screen ${i + 1}`}
+                  widths={[700, 1100, 1600]}
+                  sizes="(max-width: 800px) 100vw, 50vw"
+                />
+              </figure>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    {
+      next.id !== project.id && (
+        <a class="case__next" href={`/projects/${next.id}/`}>
+          <span class="mono-label">Next project</span>
+          <span class="case__next-title display">{next.data.title}</span>
+          <span class="case__next-img">
+            <Image src={next.data.cover} alt="" width={640} />
+          </span>
+        </a>
+      )
+    }
+  </main>
+  <Contact />
+</Base>
+
+<style>
+  .case {
+    position: relative;
+    z-index: 2;
+    background: var(--bg);
+  }
+
+  .case__hero {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: clamp(8rem, 20vh, 12rem) var(--gutter) clamp(3rem, 8vh, 5rem);
+  }
+
+  .case__back {
+    display: inline-block;
+    margin-bottom: clamp(2rem, 6vh, 4rem);
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .case__back:hover {
+    color: var(--fg);
+  }
+
+  .case__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+  }
+
+  .case__badge {
+    padding: 0.2em 0.7em;
+    border: 1px solid color-mix(in srgb, var(--sky) 55%, transparent);
+    border-radius: 999px;
+    color: var(--sky);
+  }
+
+  .case__title {
+    font-size: clamp(3.5rem, 13vw, 13rem);
+    overflow-wrap: anywhere;
+  }
+
+  .case__summary {
+    max-width: 30ch;
+    margin-top: clamp(1.5rem, 4vh, 2.5rem);
+    font-size: clamp(1.35rem, 2.6vw, 2.4rem);
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  .case__info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1.5rem 2rem;
+    margin: clamp(2.5rem, 7vh, 4.5rem) 0 0;
+  }
+
+  .case__info > div {
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+  }
+
+  .case__info dt {
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .case__info dd {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+
+  .case__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .case__cover {
+    margin: 0 var(--gutter);
+    overflow: hidden;
+    border-radius: clamp(16px, 2vw, 28px);
+  }
+
+  .case__cover :global(img) {
+    width: 100%;
+    height: auto;
+  }
+
+  /* case study text: narrow reading column, images break out wider */
+  .case__body {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: clamp(4rem, 12vh, 8rem) var(--gutter);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 720px) minmax(0, 1fr);
+  }
+
+  .case__body > :global(*) {
+    grid-column: 2;
+  }
+
+  .case__body :global(h2) {
+    margin: clamp(3rem, 9vh, 5rem) 0 1.25rem;
+    font-size: clamp(2rem, 4.5vw, 3.75rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+  }
+
+  .case__body :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .case__body :global(h3) {
+    margin: 2.5rem 0 0.75rem;
+    font-size: clamp(1.4rem, 2.4vw, 2rem);
+    font-weight: 600;
+  }
+
+  .case__body :global(p),
+  .case__body :global(li) {
+    font-size: clamp(1.05rem, 1.35vw, 1.25rem);
+    line-height: 1.65;
+    color: rgba(242, 239, 232, 0.8);
+  }
+
+  .case__body :global(p) {
+    margin: 0 0 1.25rem;
+  }
+
+  .case__body :global(strong) {
+    color: var(--fg);
+    font-weight: 600;
+  }
+
+  .case__body :global(ul),
+  .case__body :global(ol) {
+    margin: 0 0 1.25rem;
+    padding-left: 1.25rem;
+  }
+
+  .case__body :global(li::marker) {
+    color: var(--sky);
+  }
+
+  .case__body :global(a) {
+    color: var(--sky);
+  }
+
+  .case__body :global(p:has(> img)) {
+    grid-column: 1 / -1;
+    margin: clamp(2rem, 6vh, 4rem) 0;
+  }
+
+  .case__body :global(img) {
+    width: 100%;
+    height: auto;
+    border-radius: clamp(14px, 1.7vw, 24px);
+  }
+
+  .case__body :global(video),
+  .case__body :global(iframe) {
+    grid-column: 1 / -1;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    border: 0;
+    border-radius: clamp(14px, 1.7vw, 24px);
+    margin: clamp(2rem, 6vh, 4rem) 0;
+  }
+
+  .case__gallery {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--gutter) clamp(4rem, 12vh, 8rem);
+  }
+
+  .case__gallery h2 {
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .case__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(0.75rem, 1.5vw, 1.5rem);
+  }
+
+  .case__grid figure {
+    margin: 0;
+    overflow: hidden;
+    border-radius: clamp(12px, 1.4vw, 20px);
+  }
+
+  .case__grid figure:nth-child(3n + 1) {
+    grid-column: 1 / -1;
+  }
+
+  .case__grid :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .case__next {
+    position: relative;
+    display: block;
+    padding: clamp(4rem, 14vh, 9rem) var(--gutter);
+    border-top: 1px solid var(--line);
+    text-align: center;
+    text-decoration: none;
+    overflow: hidden;
+  }
+
+  .case__next .mono-label {
+    display: block;
+    margin-bottom: 1rem;
+    color: var(--muted);
+  }
+
+  .case__next-title {
+    position: relative;
+    z-index: 2;
+    display: block;
+    font-size: clamp(3rem, 11vw, 11rem);
+    transition: color 0.4s;
+  }
+
+  .case__next-img {
+    position: absolute;
+    z-index: 1;
+    left: 50%;
+    top: 50%;
+    width: min(420px, 50vw);
+    translate: -50% -40%;
+    rotate: -4deg;
+    opacity: 0;
+    scale: 0.8;
+    transition:
+      opacity 0.4s,
+      scale 0.6s var(--ease-out),
+      translate 0.6s var(--ease-out);
+    pointer-events: none;
+  }
+
+  .case__next-img :global(img) {
+    width: 100%;
+    border-radius: 16px;
+  }
+
+  @media (hover: hover) {
+    .case__next:hover .case__next-img {
+      opacity: 1;
+      scale: 1;
+      translate: -50% -50%;
+    }
+    .case__next:hover .case__next-title {
+      color: var(--sky);
+      mix-blend-mode: difference;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .case__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { SplitText } from 'gsap/SplitText';
+
+  gsap.registerPlugin(ScrollTrigger, SplitText);
+
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.fonts.ready.then(() => {
+      const title = document.querySelector('[data-case-title]');
+      if (title) {
+        const split = SplitText.create(title, { type: 'chars,words', mask: 'chars' });
+        gsap.from(split.chars, { yPercent: 110, duration: 1.1, ease: 'expo.out', stagger: 0.03, delay: 0.1 });
+      }
+      gsap.from('[data-case-fade]', { y: 30, opacity: 0, duration: 0.9, ease: 'power3.out', stagger: 0.1, delay: 0.4 });
+    });
+
+    const cover = document.querySelector<HTMLElement>('[data-cover]');
+    if (cover) {
+      gsap.fromTo(
+        cover.querySelector('img'),
+        { scale: 1.15 },
+        { scale: 1, ease: 'none', scrollTrigger: { trigger: cover, start: 'top bottom', end: 'bottom top', scrub: true } },
+      );
+    }
+
+    gsap.utils.toArray<HTMLElement>('[data-gallery-item], .case__body img').forEach((el) => {
+      gsap.from(el, {
+        y: 60,
+        opacity: 0,
+        duration: 1,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: el, start: 'top 90%' },
+      });
+    });
+  }
+</script>
