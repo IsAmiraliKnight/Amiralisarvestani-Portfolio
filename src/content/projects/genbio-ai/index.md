@@ -4,7 +4,7 @@ year: "2025"
 badge: NEW
 summary: A homepage redesign that turns complex AI and biology research into a clearer, more engaging digital experience.
 cover: ./01.jpg
-gallery: [./01.jpg, ./02.jpg, ./03.jpg, ./04.jpg, ./05.jpg]
+gallery: [./01.jpg, ./02.jpg, ./03.jpg, ./04.jpg]
 role: Lead UI/UX Designer
 duration: 1.5 months
 tools: [Figma, FigJam, AI Visual Tools]
