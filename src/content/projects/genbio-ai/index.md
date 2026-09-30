@@ -1,5 +1,5 @@
 ---
-title: GenBio AI
+title: genbio-ai
 year: "2025"
 badge: NEW
 summary: A homepage redesign that turns complex AI and biology research into a clearer, more engaging digital experience.
